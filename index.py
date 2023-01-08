@@ -15,11 +15,14 @@ def index():
 
 @app.route('/asset')
 def asset():
+
     SERVER_KEY = current_app.config["INIDCATOR_SERVER_KEY"]
 
     name = request.args.get('name', None)
     time = request.args.get('time', None)
     sentKey = request.args.get('api_key', None)
+
+    print(sentKey)
 
     if not sentKey or sentKey != SERVER_KEY:
         return "Not authorized", 403
