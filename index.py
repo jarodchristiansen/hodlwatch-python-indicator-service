@@ -10,20 +10,19 @@ app.config.from_pyfile('config.py')
 
 @app.route('/')
 def index():
-    return '<h1>Hello Puppy!</h1>'
-
-
-@app.route('/information')
-def info():
-    return "<h1>Puppies are cute</h1>"
+    return '<h1>Youve reached the hodlwatch indicator service, we arent in right now</h1>'
 
 
 @app.route('/asset')
 def asset():
+    SERVER_KEY = current_app.config["INIDCATOR_SERVER_KEY"]
+
     name = request.args.get('name', None)
     time = request.args.get('time', None)
+    sentKey = request.args.get('api_key', None)
 
-    print('IN Asset NAME', name, time)
+    if not sentKey or sentKey != SERVER_KEY:
+        return "Not authorized", 403
 
     priceData = requests.get(
         'https://min-api.cryptocompare.com/data/v2/histoday?fsym={}&tsym=USD&limit={}'.format(name, time))
@@ -35,10 +34,6 @@ def asset():
 
         blockchainData = requests.get(
             'https://min-api.cryptocompare.com/data/blockchain/histo/day?fsym={}&limit={}&api_key={}'.format(name, time, CRYPTO_KEY))
-
-    #   let priceData = await fetch(
-    #     `https://min-api.cryptocompare.com/data/v2/histoday?fsym=${symbol.toUpperCase()}&tsym=USD&limit=${time}`
-    #   ).then((response) => response.json());
 
     obs = [priceData.json(), blockchainData.json()]
 
